@@ -7,7 +7,7 @@ const LoginScreen: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState<string>('');
 
   const validateForm = (): boolean => {
-    if (!email || !password) {
+    if (!email || !password) {    
       setErrorMessage('Email and password are required.');
       return false;
     }
@@ -26,7 +26,7 @@ const LoginScreen: React.FC = () => {
     }
   };
 
-  return (
+  return   (
     <View style={styles.container}>
       <Text style={styles.title}>Login</Text>
 
@@ -53,7 +53,7 @@ const LoginScreen: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-    </View>
+    </View>             
   );
 };
 
