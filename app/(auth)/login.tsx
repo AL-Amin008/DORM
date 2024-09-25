@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
@@ -53,6 +54,10 @@ const LoginScreen: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
+      <Text style={styles.logintext}>     If not signed in yet{' '} <Link href="/register" style={styles.login_link}>Sign-up</Link></Text> 
+      
+      
+      
     </View>             
   );
 };
@@ -70,6 +75,25 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     color: '#333',
+  },
+
+  logintext:{
+
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+
+  },
+  login_link:{
+
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: 'blue',
+
   },
   input: {
     height: 50,

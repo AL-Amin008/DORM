@@ -1,3 +1,4 @@
+import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
@@ -31,8 +32,31 @@ const RegistrationScreen: React.FC = () => {
 
   const handleRegister = () => {
     if (validateForm()) {
-      // Perform registration logic here (API call, etc.)
-      Alert.alert('Registration successful!', `Welcome, ${name}`);
+      // API call to store the user info in the database
+      const user = {
+        name,
+        email,
+        password,
+      };
+
+      fetch('http://your-api-url.com/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.success) {
+            Alert.alert('Registration successful!', `Welcome, ${name}`);
+          } else {
+            setErrorMessage(data.message || 'Registration failed.');
+          }
+        })
+        .catch((error) => {
+          setErrorMessage('Something went wrong. Please try again later.');
+        });
     }
   };
 
@@ -79,6 +103,10 @@ const RegistrationScreen: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
+
+      <Text style={styles.register}>Already have an account?{' '}
+        <Link href="/login" style={styles.register_link}>login</Link>
+      </Text>
     </View>
   );
 };
@@ -96,6 +124,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     textAlign: 'center',
     color: '#333',
+  },
+  register: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+  },
+  register_link: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: 'blue',
   },
   input: {
     height: 50,
