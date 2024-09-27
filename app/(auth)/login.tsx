@@ -1,4 +1,5 @@
 import { Link } from 'expo-router';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 
@@ -20,17 +21,32 @@ const LoginScreen: React.FC = () => {
     return true;
   };
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (validateForm()) {
-      // Perform login logic here (API call, etc.)
-      Alert.alert('Login successful!', `Welcome back, ${email}`);
+      try {
+        const response = await fetch('http://localhost:5000/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          Alert.alert('Login successful!', `Welcome back, ${email}`);
+        } else {
+          Alert.alert('Login failed', data.message);
+        }
+      } catch (error) {
+        Alert.alert('Error', 'An error occurred while logging in.');
+      }
     }
   };
 
-  return   (
+  return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-
+      <Text style={styles.logo}>DORM</Text>
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
       <TextInput
@@ -54,11 +70,11 @@ const LoginScreen: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <Text style={styles.logintext}>     If not signed in yet{' '} <Link href="/register" style={styles.login_link}>Sign-up</Link></Text> 
-      
-      
-      
-    </View>             
+      <Text style={styles.logintext}>
+        If not signed in yet{' '}
+        <Link href="/register" style={styles.login_link}>Sign-up</Link>
+      </Text>
+    </View>
   );
 };
 
@@ -69,8 +85,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     backgroundColor: '#f8f9fa',
   },
+  logo:{
+
+    fontSize: 32,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#333',
+
+  },
   title: {
-    fontSize: 28,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',

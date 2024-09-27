@@ -1,3 +1,5 @@
+// RegistrationScreen.js
+
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
@@ -32,14 +34,13 @@ const RegistrationScreen: React.FC = () => {
 
   const handleRegister = () => {
     if (validateForm()) {
-      // API call to store the user info in the database
       const user = {
         name,
         email,
         password,
       };
 
-      fetch('http://your-api-url.com/register', {
+      fetch('http://localhost:3000/register', {  // Replace with your backend URL
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -62,7 +63,7 @@ const RegistrationScreen: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Register</Text>
+      <Text style={styles.title}>Welcome to DORM</Text>
 
       {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
