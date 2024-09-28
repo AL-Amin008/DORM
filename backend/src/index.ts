@@ -1,13 +1,16 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
-
+import registerRouter from './routes/register'; // Corrected path for the register route
+// import studentsRouter from './routes/students'; // Assuming you have a students route
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // To parse incoming JSON requests
+
 const port = process.env.PORT || 3000;
 
-
+// Set up MySQL connection
 const db = mysql.createConnection({
     host: 'localhost', 
     user: 'root', 
@@ -41,6 +44,10 @@ app.get('/students', (req: Request, res: Response) => {
         }
     });
 });
+
+// Register route from register.ts
+app.use('/api', registerRouter); // Use the registerRouter for registration-related routes
+// app.use('/api', studentsRouter); // Assuming you have a students route
 
 // Start the server
 app.listen(port, () => {
