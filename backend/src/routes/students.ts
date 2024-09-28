@@ -2,17 +2,17 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
 
-
+// Initialize Express
 const app = express();
 app.use(cors());
 const port = process.env.PORT || 3000;
 
-
+// Create MySQL connection
 const db = mysql.createConnection({
-    host: 'localhost', 
-    user: 'root', 
-    // password: 'null', 
-    database: 'dorm'
+    host: 'localhost', // Replace with your MySQL host (e.g., localhost)
+    user: 'root', // Replace with your MySQL username
+    // password: 'your_password', // Replace with your MySQL password
+    database: 'dorm' // Replace with your MySQL database name
 });
 
 // Connect to MySQL
