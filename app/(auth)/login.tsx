@@ -1,15 +1,16 @@
 import { Link } from 'expo-router';
-import axios from 'axios';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
+  const navigation = useNavigation(); // Hook for navigation
 
   const validateForm = (): boolean => {
-    if (!email || !password) {    
+    if (!email || !password) {
       setErrorMessage('Email and password are required.');
       return false;
     }
@@ -35,6 +36,7 @@ const LoginScreen: React.FC = () => {
         const data = await response.json();
         if (response.ok) {
           Alert.alert('Login successful!', `Welcome back, ${email}`);
+          navigation.navigate('Home' as never); // Navigate to HomeScreen after successful login
         } else {
           Alert.alert('Login failed', data.message);
         }
@@ -77,7 +79,6 @@ const LoginScreen: React.FC = () => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -85,40 +86,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     backgroundColor: '#f8f9fa',
   },
-  logo:{
-
+  logo: {
     fontSize: 32,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
     color: '#333',
-
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 20,
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
     textAlign: 'center',
-    color: '#333',
-  },
-
-  logintext:{
-
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#333',
-
-  },
-  login_link:{
-
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: 'blue',
-
   },
   input: {
     height: 50,
@@ -140,11 +118,19 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
   },
-  errorText: {
-    color: 'red',
-    marginBottom: 10,
+  logintext: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 20,
     textAlign: 'center',
+    color: '#333',
+  },
+  login_link: {
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+    color: 'blue',
   },
 });
-
 export default LoginScreen;

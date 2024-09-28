@@ -38,22 +38,29 @@ const RegistrationScreen: React.FC = () => {
         password,
       };
 
-      fetch('http://localhost:3000/api/register', { // Update with your machine IP or localhost for testing on an emulator
+      fetch('http://localhost:3000/api/register', { // Update with your machine's IP address
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(user),
       })
-        .then((response) => response.json())
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
         .then((data) => {
-          if (data.success) {
+          if (data.message === 'User registered successfully') {
             Alert.alert('Registration successful!', `Welcome, ${name}`);
+            // Optionally, navigate to login or home screen
           } else {
             setErrorMessage(data.message || 'Registration failed.');
           }
         })
         .catch((error) => {
+          console.error('Registration error:', error); // Log the error for debugging
           setErrorMessage('Something went wrong. Please try again later.');
         });
     }
