@@ -40,7 +40,7 @@ const RegistrationScreen: React.FC = () => {
         password,
       };
 
-      fetch('http://localhost:3000/register', {  // Replace with your backend URL
+      fetch('http://localhost:3000/register', {  
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
