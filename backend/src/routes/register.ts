@@ -1,28 +1,54 @@
-import { Router, Request, Response } from 'express';
-import db from '../db'; // Make sure this import is correct
+import express, { Request, Response } from 'express';
+import mysql from 'mysql2';
+import bcrypt from 'bcrypt';
 
-const router = Router();
+const router = express.Router();
 
-// Route to handle user registration
-router.post('/register', (req: any, res: any) => {
+// Set up MySQL connection
+const db = mysql.createConnection({
+    host: 'localhost', 
+    user: 'root', 
+    database: 'dorm'
+});
+
+// Connect to MySQL
+db.connect((err) => {
+    if (err) {
+        console.error('Error connecting to MySQL:', err.stack);
+        return;
+    }
+    console.log('Connected to MySQL for register as ID ' + db.threadId);
+});
+
+// Register route
+router.post('/register', async (req: Request, res: Response): Promise<void> => {
     const { name, email, password } = req.body;
 
-    // Check if all fields are provided
     if (!name || !email || !password) {
-        return res.status(400).json({ error: 'All fields (name, email, password) are required.' });
+        res.status(400).json({ message: 'Please fill all the fields' });
+        return;
     }
 
-    // Insert user into the database
-    const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
-    db.query(query, [name, email, password], (err, result) => {
-        if (err) {
-            console.error('Database error:', err);
-            return res.status(500).json({ error: 'Failed to register user.' });
-        }
-        
-        // Return success response with user ID
-       
-    });
+    try {
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        // Prepare SQL query
+        const query = 'INSERT INTO users (name, email, password) VALUES (?, ?, ?)';
+
+        // Insert into MySQL database
+        db.query(query, [name, email, hashedPassword], (err, result) => {
+            if (err) {
+                console.error('Error executing query:', err); // Detailed error in the console
+                return res.status(500).json({ message: 'Registration failed', error: err.message }); // Send detailed error in response
+            }
+
+            res.status(201).json({ message: 'User registered successfully' });
+        });
+    } catch (error) {
+        console.error('Error in registration process:', error); // Log any error in the hashing process or logic
+        // res.status(500).json({ message: 'Server error', error: error.message });
+    }
 });
 
 export default router;
