@@ -1,8 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import mysql from 'mysql2';
-import registerRouter from './routes/register'; // Corrected path for the register route
-// import studentsRouter from './routes/students'; // Assuming you have a students route
+import registerRouter from './routes/register'; 
+import loginRouter from './routes/login'; // Corrected path for the login route
 
 const app = express();
 app.use(cors());
@@ -45,9 +45,9 @@ app.get('/students', (req: Request, res: Response) => {
     });
 });
 
-// Register route from register.ts
+// Register the routers for login and registration
+app.use('/api', loginRouter); // Ensure this points to the correct login.ts file
 app.use('/api', registerRouter); // Use the registerRouter for registration-related routes
-// app.use('/api', studentsRouter); // Assuming you have a students route
 
 // Start the server
 app.listen(port, () => {
