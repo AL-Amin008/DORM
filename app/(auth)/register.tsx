@@ -1,5 +1,3 @@
-// RegistrationScreen.js
-
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
@@ -40,7 +38,7 @@ const RegistrationScreen: React.FC = () => {
         password,
       };
 
-      fetch('http://localhost:3000/register', {  
+      fetch('http://localhost:3000/api/register', { // Update with your machine IP or localhost for testing on an emulator
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
