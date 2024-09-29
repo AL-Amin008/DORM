@@ -49,6 +49,12 @@ app.get('/students', (req: Request, res: Response) => {
 app.use('/api', loginRouter); // Ensure this points to the correct login.ts file
 app.use('/api', registerRouter); // Use the registerRouter for registration-related routes
 
+// Error handling middleware
+app.use((err: Error, req: Request, res: Response, next: Function) => {
+    console.error('An error occurred:', err);
+    res.status(500).json({ message: 'Internal Server Error' });
+});
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
