@@ -25,7 +25,7 @@ const LoginScreen: React.FC = () => {
   const handleLogin = async () => {
     if (validateForm()) {
       try {
-        const response = await fetch('http://localhost:5000/login', {
+        const response = await fetch('http://localhost:3000/api/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -36,7 +36,7 @@ const LoginScreen: React.FC = () => {
         const data = await response.json();
         if (response.ok) {
           Alert.alert('Login successful!', `Welcome back, ${email}`);
-          navigation.navigate('Home' as never); // Navigate to HomeScreen after successful login
+          navigation.navigate('Home'); // Navigate to HomeScreen after successful login
         } else {
           Alert.alert('Login failed', data.message);
         }
@@ -79,6 +79,7 @@ const LoginScreen: React.FC = () => {
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -133,4 +134,5 @@ const styles = StyleSheet.create({
     color: 'blue',
   },
 });
+
 export default LoginScreen;
