@@ -1,13 +1,21 @@
-import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+  Login: undefined;
+  Home: undefined;
+  Register: undefined;
+};
+
+type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 const LoginScreen: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>('');
-  const navigation = useNavigation(); // Hook for navigation
+  const navigation = useNavigation<LoginScreenNavigationProp>();
 
   const validateForm = (): boolean => {
     if (!email || !password) {
@@ -25,7 +33,7 @@ const LoginScreen: React.FC = () => {
   const handleLogin = async () => {
     if (validateForm()) {
       try {
-        const response = await fetch('http://localhost:5000/login', {
+        const response = await fetch('http://localhost:3000/api/login', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -36,7 +44,8 @@ const LoginScreen: React.FC = () => {
         const data = await response.json();
         if (response.ok) {
           Alert.alert('Login successful!', `Welcome back, ${email}`);
-          navigation.navigate('Home' as never); // Navigate to HomeScreen after successful login
+          console.log("Navigating to Home");
+          navigation.navigate('Home'); // Ensure this matches the route name exactly
         } else {
           Alert.alert('Login failed', data.message);
         }
@@ -72,13 +81,13 @@ const LoginScreen: React.FC = () => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
-      <Text style={styles.logintext}>
-        If not signed in yet{' '}
-        <Link href="/register" style={styles.login_link}>Sign-up</Link>
-      </Text>
+      <TouchableOpacity style={styles.logintext} onPress={() => navigation.push('Home')}>
+        <Text style={styles.login_link}>Sign-up</Text>
+      </TouchableOpacity>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -133,4 +142,5 @@ const styles = StyleSheet.create({
     color: 'blue',
   },
 });
+
 export default LoginScreen;

@@ -1,11 +1,9 @@
 import express, { Request, Response } from 'express';
 import mysql, { RowDataPacket } from 'mysql2'; // Import RowDataPacket
 import bcrypt from 'bcrypt';
-import db from '../db';
+import db from '../db'; // Ensure this points to where your db connection is managed
 
 const router = express.Router();
-
-// Assuming the MySQL connection is already established
 
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
     const { email, password } = req.body;
