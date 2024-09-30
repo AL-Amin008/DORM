@@ -4,6 +4,8 @@ import mysql from 'mysql2';
 import registerRouter from './routes/register';
 import loginRouter from './routes/login';
 import info from './routes/info'; // Ensure the path is correct
+import spendRoutes from './routes/spendRoutes';
+
 
 const app = express();
 app.use(cors());
@@ -36,7 +38,8 @@ app.get('/', (req: Request, res: Response) => {
 // Register the routers for login, registration, and info
 app.use('/api', loginRouter);
 app.use('/api', registerRouter);
-app.use('/api', info); // Make sure this line is included
+app.use('/api', info); 
+app.use('/api', spendRoutes);// Make sure this line is included
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: Function) => {
