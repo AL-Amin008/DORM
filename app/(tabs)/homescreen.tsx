@@ -1,154 +1,77 @@
-import React, { useState, useEffect } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
-import {
-  Card,
-  Text,
-  Button,
-  Divider,
-  Title,
-  Subheading,
-} from "react-native-paper";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-// Define the Meal interface
+
 interface Meal {
   id: number;
-  name: string;
+  meal_name: string;
   description: string;
-  image: string;
+  meal_time: string;
+  meal_date: string;
+  created_at: string;
+  updated_at: string;
 }
 
-// Define the PersonalInfo interface
-interface PersonalInfo {
-  balance: number;
-  totalDeposit: number;
-  totalMeal: number;
-  totalMealCost: number;
-  mealRate: number;
-  otherIndividualCost: number;
-  otherSharedCost: number;
-}
+const Meals: React.FC = () => {
+  const [meals, setMeals] = useState<Meal[]>([]); 
+  const [loading, setLoading] = useState<boolean>(true); 
+  const [error, setError] = useState<string | null>(null); 
 
-// API base URL
-const API_BASE_URL = "http://localhost:3000/api";
-
-// API function to get personal information
-const getPersonalInfo = async (): Promise<PersonalInfo> => {
-  const response = await fetch(`${API_BASE_URL}/personal_info/1`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch personal info");
-  }
-  const data = await response.json();
-  return data.personalInfo; // Access the personalInfo from the response
-};
-
-// API function to get meals
-const getMeals = async (): Promise<Meal[]> => {
-  const response = await fetch(`${API_BASE_URL}/meals`);
-  if (!response.ok) {
-    throw new Error("Failed to fetch meals");
-  }
-  const data = await response.json();
-  return data.meals; // Access the meals from the response
-};
-
-const HomeScreen: React.FC = () => {
-  const [personalInfo, setPersonalInfo] = useState<PersonalInfo | null>(null);
-  const [meals, setMeals] = useState<Meal[]>([]);
-
+  
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchMeals = async () => {
       try {
-        const infoData = await getPersonalInfo();
-        const mealsData = await getMeals();
-        setPersonalInfo(infoData);
-        setMeals(mealsData);
-      } catch (error) {
-        console.error("Failed to fetch data", error);
+        const response = await axios.get('http://localhost:3000/api/meals');
+        setMeals(response.data.meals);
+        setLoading(false);
+      } catch (err) {
+        setError('Failed to fetch meals');
+        setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchMeals();
+  }, []); 
+
+  if (loading) {
+    return <p>Loading meals...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.personalInfoContainer}>
-        <Title style={styles.title}>Personal Information</Title>
-        {personalInfo ? (
-          <>
-            <Subheading>Balance: ${personalInfo.balance}</Subheading>
-            <Subheading>Total Deposit: ${personalInfo.totalDeposit}</Subheading>
-            <Subheading>Total Meals: {personalInfo.totalMeal}</Subheading>
-            <Subheading>Total Meal Cost: ${personalInfo.totalMealCost}</Subheading>
-          </>
-        ) : (
-          <Text>Loading personal information...</Text>
-        )}
-      </View>
-
-      <Divider style={styles.divider} />
-
-      <Title style={styles.title}>Available Meals</Title>
-      {meals.length > 0 ? (
-        meals.map((meal) => (
-          <Card key={meal.id} style={styles.card}>
-            <Card.Cover source={{ uri: meal.image }} />
-            <Card.Content>
-              <Title>{meal.name}</Title>
-              <Text>{meal.description}</Text>
-            </Card.Content>
-            <Card.Actions>
-              <Button
-                icon="cart"
-                mode="contained"
-                onPress={() => console.log(`Ordering ${meal.name}`)}
-              >
-                Order
-              </Button>
-            </Card.Actions>
-          </Card>
-        ))
+    <div>
+      <h1>Meal List</h1>
+      {meals.length === 0 ? (
+        <p>No meals found.</p>
       ) : (
-        <Text>No meals available</Text>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Meal Name</th>
+              <th>Description</th>
+              <th>Meal Time</th>
+              <th>Meal Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {meals.map((meal) => (
+              <tr key={meal.id}>
+                <td>{meal.id}</td>
+                <td>{meal.meal_name}</td>
+                <td>{meal.description}</td>
+                <td>{meal.meal_time}</td>
+                <td>{meal.meal_date}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       )}
-    </ScrollView>
+    </div>
   );
 };
 
-// Styles
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#f8f9fa",
-  },
-  title: {
-    marginBottom: 12,
-    color: "#343a40",
-  },
-  personalInfoContainer: {
-    padding: 16,
-    backgroundColor: "#ffffff",
-    borderRadius: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 5,
-    marginBottom: 16,
-  },
-  card: {
-    marginBottom: 16,
-    borderRadius: 8,
-    elevation: 3,
-  },
-  divider: {
-    marginVertical: 16,
-    backgroundColor: "#343a40",
-  },
-});
-
-export default HomeScreen;
+export default Meals;
