@@ -11,4 +11,8 @@ const wallet = () => {
 
 export default wallet
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+
+
+  
+})
