@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   cardSubtitle: {
-    fontSize: 14,
+    fontSize: 14,  
     color: '#4A4A4A',
   },
   editButton: {
