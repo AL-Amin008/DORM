@@ -2,7 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/MAD_React_Native" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/mad_sql/MAD_Express" vcs="Git" />
   </component>
 </project>
