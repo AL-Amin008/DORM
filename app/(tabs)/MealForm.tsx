@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  Alert,
+  StyleSheet,
+} from 'react-native';
+import { Picker } from '@react-native-picker/picker'; // Updated import
 
 interface Meal {
   id?: number;
@@ -24,7 +33,6 @@ const MealForm: React.FC<Props> = ({ mealId, onSuccess }) => {
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
- 
   useEffect(() => {
     if (mealId) {
       setIsEditing(true);
@@ -32,7 +40,7 @@ const MealForm: React.FC<Props> = ({ mealId, onSuccess }) => {
         .get(`http://localhost:3000/api/meals/${mealId}`)
         .then((response) => {
           const meal = response.data.meal;
-          
+
           setMealData({
             meal_name: meal.meal_name,
             description: meal.description,
@@ -46,35 +54,29 @@ const MealForm: React.FC<Props> = ({ mealId, onSuccess }) => {
     }
   }, [mealId]);
 
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
+  const handleInputChange = (name: keyof Meal, value: string) => {
     setMealData((prevMeal) => ({
       ...prevMeal,
       [name]: value,
     }));
   };
 
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = () => {
     if (isEditing) {
-  
       axios
         .put(`http://localhost:3000/api/meals/${mealId}`, mealData)
         .then(() => {
-          alert('Meal updated successfully');
+          Alert.alert('Meal updated successfully');
           onSuccess(); 
         })
         .catch((error) => {
           console.error('Error updating meal:', error);
         });
     } else {
-      
       axios
         .post('http://localhost:3000/api/meals', mealData)
         .then(() => {
-          alert('Meal added successfully');
+          Alert.alert('Meal added successfully');
           onSuccess(); 
           setMealData({ meal_name: '', description: '', meal_time: 'Morning', meal_date: '' }); 
         })
@@ -85,56 +87,72 @@ const MealForm: React.FC<Props> = ({ mealId, onSuccess }) => {
   };
 
   return (
-    <div>
-      <h2>{isEditing ? 'Edit Meal' : 'Add New Meal'}</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Meal Name:</label>
-          <input
-            type="text"
-            name="meal_name"
-            value={mealData.meal_name}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Description:</label>
-          <input
-            type="text"
-            name="description"
-            value={mealData.description}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <div>
-          <label>Meal Time:</label>
-          <select
-            name="meal_time"
-            value={mealData.meal_time}
-            onChange={handleInputChange}
-            required
-          >
-            <option value="Morning">Morning</option>
-            <option value="Noon">Noon</option>
-            <option value="Night">Night</option>
-          </select>
-        </div>
-        <div>
-          <label>Meal Date:</label>
-          <input
-            type="date"
-            name="meal_date"
-            value={mealData.meal_date}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-        <button type="submit">{isEditing ? 'Update Meal' : 'Add Meal'}</button>
-      </form>
-    </div>
+    <View style={styles.container}>
+      <Text style={styles.title}>{isEditing ? 'Edit Meal' : 'Add New Meal'}</Text>
+      <View>
+        <Text>Meal Name:</Text>
+        <TextInput
+          style={styles.input}
+          value={mealData.meal_name}
+          onChangeText={(value) => handleInputChange('meal_name', value)}
+        
+        />
+      </View>
+      <View>
+        <Text>Description:</Text>
+        <TextInput
+          style={styles.input}
+          value={mealData.description}
+          onChangeText={(value) => handleInputChange('description', value)}
+
+        />
+      </View>
+      <View>
+        <Text>Meal Time:</Text>
+        <Picker
+          selectedValue={mealData.meal_time}
+          onValueChange={(value) => handleInputChange('meal_time', value)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Morning" value="Morning" />
+          <Picker.Item label="Noon" value="Noon" />
+          <Picker.Item label="Night" value="Night" />
+        </Picker>
+      </View>
+      <View>
+        <Text>Meal Date:</Text>
+        <TextInput
+          style={styles.input}
+          value={mealData.meal_date}
+          onChangeText={(value) => handleInputChange('meal_date', value)}
+     
+        />
+      </View>
+      <Button title={isEditing ? 'Update Meal' : 'Add Meal'} onPress={handleSubmit} />
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 10,
+    marginBottom: 20,
+  },
+  picker: {
+    height: 50,
+    width: 150,
+    marginBottom: 20,
+  },
+});
 
 export default MealForm;
