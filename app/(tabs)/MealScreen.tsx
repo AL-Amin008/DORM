@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, Alert, Picker } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -12,7 +12,7 @@ interface Meal {
 
 const MealScreen = () => {
   const [meals, setMeals] = useState<Meal[]>([]);
-  const [mealTime, setMealTime] = useState<string>('');
+  const [mealTime, setMealTime] = useState<string>('morning');
   const [mealDate, setMealDate] = useState<string>('');
   const [mealNumber, setMealNumber] = useState<number | string>('');
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +26,7 @@ const MealScreen = () => {
     }
 
     try {
-      const response = await axios.get(`http://localhost:3000/api/meals/meal/${userId}`);
+      const response = await axios.get(`http://localhost:3000/api/meal`);  // Updated to fetch meals for a specific user
       if (response.status === 200) {
         setMeals(response.data.meals);
       } else {
@@ -64,7 +64,7 @@ const MealScreen = () => {
 
       if (response.status === 201) {
         setMeals([...meals, response.data]); // Add meal to the state
-        setMealTime('');
+        setMealTime('morning');
         setMealDate('');
         setMealNumber('');
         setError(null);
@@ -80,12 +80,16 @@ const MealScreen = () => {
 
       {error && <Text style={styles.error}>{error}</Text>}
 
-      <TextInput
+      <Picker
         style={styles.input}
-        placeholder="Meal Time (HH:MM)"
-        value={mealTime}
-        onChangeText={setMealTime}
-      />
+        selectedValue={mealTime}
+        onValueChange={(itemValue: React.SetStateAction<string>) => setMealTime(itemValue)}
+      >
+        <Picker.Item label="Morning" value="morning" />
+        <Picker.Item label="Noon" value="noon" />
+        <Picker.Item label="Night" value="night" />
+      </Picker>
+
       <TextInput
         style={styles.input}
         placeholder="Meal Date (YYYY-MM-DD)"
@@ -101,10 +105,9 @@ const MealScreen = () => {
       />
       <Button title="Add Meal" onPress={addMeal} />
 
-      {/* List of Meals */}
       <FlatList
         data={meals}
-        keyExtractor={(item) => (item.id ? item.id.toString() : 'key-' + Math.random())} // Fallback in case of undefined `id`
+        keyExtractor={(item) => (item.id ? item.id.toString() : 'key-' + Math.random().toString())}  // Safe fallback for undefined id
         renderItem={({ item }) => (
           <View style={styles.mealItem}>
             <Text>Meal Time: {item.meal_time}</Text>
