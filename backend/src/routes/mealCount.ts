@@ -11,7 +11,7 @@ router.get('/meal', (_req: Request, res: Response): void => {
                meal_count.entry_at, users.name AS user_name
         FROM meal_count
         JOIN users ON meal_count.user_id = users.id
-    `;  // Fetch meal count along with user name and entry_at timestamp
+    `;
 
     db.query(query, (err, results: RowDataPacket[]) => {
         if (err) {
@@ -32,7 +32,7 @@ router.get('/meal/:id', (req: Request, res: Response): void => {
         FROM meal_count
         JOIN users ON meal_count.user_id = users.id
         WHERE meal_count.id = ?
-    `;  // Fetch specific meal entry along with user name and entry_at timestamp
+    `;
 
     db.query(query, [id], (err, results: RowDataPacket[]) => {
         if (err) {
@@ -79,7 +79,7 @@ router.post('/meal', (req: Request, res: Response): void => {
         const query = `
             INSERT INTO meal_count (user_id, meal_time, meal_date, meal_number, entry_at)
             VALUES (?, ?, ?, ?, NOW())
-        `;  // Insert meal record along with current timestamp for entry_at
+        `;
 
         db.query(query, [user_id, meal_time, meal_date, meal_number], (err, result: ResultSetHeader) => {
             if (err) {
@@ -88,6 +88,33 @@ router.post('/meal', (req: Request, res: Response): void => {
                 return;
             }
             res.status(201).json({ message: 'Meal entry added successfully', mealId: result.insertId });
+
+            // Update meal_rate table without relying on a trigger
+            const updateMealRateQuery = `
+                INSERT INTO meal_rate (user_id, sum_meal_number, sum_price, total_meal_rate)
+                SELECT 
+                    mc.user_id,
+                    SUM(mc.meal_number) AS sum_meal_number,
+                    SUM(s.price) AS sum_price,
+                    (SUM(s.price) / NULLIF(SUM(mc.meal_number), 0)) AS total_meal_rate
+                FROM 
+                    meal_count mc
+                LEFT JOIN 
+                    spend s ON mc.user_id = s.user_id
+                WHERE mc.user_id = ?
+                GROUP BY mc.user_id
+                ON DUPLICATE KEY UPDATE 
+                    sum_meal_number = VALUES(sum_meal_number),
+                    sum_price = VALUES(sum_price),
+                    total_meal_rate = VALUES(total_meal_rate);
+            `;
+
+            db.query(updateMealRateQuery, [user_id], (err) => {
+                if (err) {
+                    console.error('Error updating meal_rate:', err);
+                    // Optional: Handle this error as needed (e.g., log it or notify the user)
+                }
+            });
         });
     });
 });
@@ -144,7 +171,7 @@ router.put('/meal/:id', (req: Request, res: Response): void => {
 // Endpoint to delete a meal entry
 router.delete('/meal/:id', (req: Request, res: Response): void => {
     const { id } = req.params;
-    const query = 'DELETE FROM meal_count WHERE id = ?';  // Updated to match the table name
+    const query = 'DELETE FROM meal_count WHERE id = ?';
 
     db.query(query, [id], (err, result: ResultSetHeader) => {
         if (err) {
