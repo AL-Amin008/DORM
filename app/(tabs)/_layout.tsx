@@ -1,6 +1,5 @@
 import { Tabs } from 'expo-router';
 import React from 'react';
-
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
@@ -14,92 +13,82 @@ export default function TabLayout() {
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: true,
       }}>
+      
+      {/* Home Screen */}
       <Tabs.Screen
-        name="login"
+        name="homescreen"
         options={{
-          title: 'Home', headerShown: true,
+          title: 'Home',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color}  />
+            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
           ),
         }}
       />
+      
+      {/* Meal Rate Screen */}
       <Tabs.Screen
-        name="explore"
+        name="meal_rate"
         options={{
-          title: 'Explore',
+          title: 'Meal Rate',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'fast-food' : 'fast-food-outline'} color={color} />
           ),
         }}
       />
-       <Tabs.Screen
-        name="dashboard"
+      
+      {/* Meal Form Screen */}
+      <Tabs.Screen
+        name="MealForm"
         options={{
-          title: 'Profile',
+          title: 'Meal Form',
+          tabBarButton: () => null,  // Hides the screen from the tab bar
+        }}
+      />
+      
+      {/* Meal Screen */}
+      <Tabs.Screen
+        name="MealScreen"
+        options={{
+          title: 'Meals',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'restaurant' : 'restaurant-outline'} color={color} />
           ),
         }}
       />
-
-         <Tabs.Screen
-        name="meal"
+      
+      {/* Spend Screen */}
+      <Tabs.Screen
+        name="SpendScreen"
         options={{
-          title: 'Meal',
+          title: 'Spend',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'wallet' : 'wallet-outline'} color={color} />
           ),
         }}
       />
-
-<Tabs.Screen
-        name="additem"
+      
+      {/* Users Screen */}
+      <Tabs.Screen
+        name="users"
         options={{
-          title: 'Add-Items',
+          title: 'Users',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'people' : 'people-outline'} color={color} />
           ),
         }}
       />
-
-<Tabs.Screen
-        name="addmoney"
+      
+      {/* Wallet Screen */}
+      <Tabs.Screen
+        name="wallet"
         options={{
-          title: 'Add-Money',
+          title: 'Wallet',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+            <TabBarIcon name={focused ? 'cash' : 'cash-outline'} color={color} />
           ),
         }}
       />
-       <Tabs.Screen
-        name="adduser"
-        options={{
-          title: 'User request',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
-
-<Tabs.Screen
-        name="monthlycost"
-        options={{
-          title: 'This Months',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
-
-<Tabs.Screen
-        name="money_indivisual"
-        options={{
-          title: 'Persons',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
+      
     </Tabs>
   );
 }
