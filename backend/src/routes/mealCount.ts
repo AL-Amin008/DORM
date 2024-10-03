@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/meal', (_req: Request, res: Response): void => {
     const query = `
         SELECT meal_count.id, meal_count.meal_time, meal_count.meal_date, meal_count.meal_number, 
-               meal_count.entry_at, users.full_name AS user_name
+               meal_count.entry_at, users.name AS user_name
         FROM meal_count
         JOIN users ON meal_count.user_id = users.id
     `;  // Fetch meal count along with user name and entry_at timestamp
@@ -28,7 +28,7 @@ router.get('/meal/:id', (req: Request, res: Response): void => {
     const { id } = req.params;
     const query = `
         SELECT meal_count.id, meal_count.meal_time, meal_count.meal_date, meal_count.meal_number, 
-               meal_count.entry_at, users.full_name AS user_name
+               meal_count.entry_at, users.name AS user_name
         FROM meal_count
         JOIN users ON meal_count.user_id = users.id
         WHERE meal_count.id = ?
@@ -120,7 +120,7 @@ router.put('/meal/:id', (req: Request, res: Response): void => {
 
         const query = `
             UPDATE meal_count 
-            SET user_id = ?, meal_time = ?, meal_date = ?, meal_number = ?, updated_at = NOW()
+            SET user_id = ?, meal_time = ?, meal_date = ?, meal_number = ?, entry_at = NOW()
             WHERE id = ?
         `;
 
