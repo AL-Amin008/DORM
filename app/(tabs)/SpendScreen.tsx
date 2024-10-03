@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import axios from 'axios';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
+// Define the Spend interface
 interface Spend {
   id?: number;
-  user_id: number;
+  user_id: number; // Added user_id
   spend_date: string;
   element: string;
   price: number;
@@ -13,22 +15,19 @@ interface Spend {
 const SpendScreen: React.FC = () => {
   const [spendList, setSpendList] = useState<Spend[]>([]);
   const [newSpend, setNewSpend] = useState<Spend>({
-    user_id: 0,
-    spend_date: '',
+    user_id: 1, // Replace this with the actual user ID you want to use
+    spend_date: new Date().toISOString().split('T')[0], // Set today's date
     element: '',
     price: 0,
   });
-
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
   // Fetch existing spend records from the API
-  useEffect(() => {
-    fetchSpendData();
-  }, []);
-
   const fetchSpendData = () => {
-    axios.get('http://localhost:3000/api/spend')
+    axios
+      .get('http://localhost:3000/api/spend')
       .then((response) => {
         setSpendList(response.data.spends);
       })
@@ -37,6 +36,12 @@ const SpendScreen: React.FC = () => {
       });
   };
 
+  // Refresh data when component mounts or new data is submitted
+  useEffect(() => {
+    fetchSpendData();
+  }, []);
+
+  // Handle input field changes
   const handleInputChange = (field: string, value: string | number) => {
     setNewSpend({
       ...newSpend,
@@ -44,10 +49,26 @@ const SpendScreen: React.FC = () => {
     });
   };
 
+  // Show date picker
+  const showPicker = () => {
+    setShowDatePicker(true);
+  };
+
+  // Handle date change
+  const onDateChange = (event: any, selectedDate: Date | undefined) => {
+    const currentDate = selectedDate || new Date();
+    setNewSpend({
+      ...newSpend,
+      spend_date: currentDate.toISOString().split('T')[0],
+    });
+    setShowDatePicker(false);
+  };
+
+  // Submit new or edited spend record
   const handleSubmit = () => {
     if (isEditing && editingId !== null) {
-      // Update existing record
-      axios.put(`http://localhost:3000/api/spend/${editingId}`, newSpend)
+      axios
+        .put(`http://localhost:3000/api/spend/${editingId}`, newSpend)
         .then(() => {
           fetchSpendData();
           resetForm();
@@ -56,8 +77,8 @@ const SpendScreen: React.FC = () => {
           console.error('Error updating spend record:', error);
         });
     } else {
-      // Add new record
-      axios.post('http://localhost:3000/api/spend', newSpend)
+      axios
+        .post('http://localhost:3000/api/spend', newSpend)
         .then(() => {
           fetchSpendData();
           resetForm();
@@ -68,10 +89,11 @@ const SpendScreen: React.FC = () => {
     }
   };
 
+  // Reset form after submission or editing
   const resetForm = () => {
     setNewSpend({
-      user_id: 0,
-      spend_date: '',
+      user_id: 1, // Reset user ID as needed
+      spend_date: new Date().toISOString().split('T')[0],
       element: '',
       price: 0,
     });
@@ -79,24 +101,27 @@ const SpendScreen: React.FC = () => {
     setEditingId(null);
   };
 
+  // Handle editing a spend record
   const handleEdit = (item: Spend) => {
     setIsEditing(true);
     setEditingId(item.id || null);
     setNewSpend({
-      user_id: item.user_id,
+      user_id: item.user_id || 1, // Ensure user_id is set
       spend_date: item.spend_date,
       element: item.element,
       price: item.price,
     });
   };
 
+  // Render individual spend items
   const renderSpendItem = ({ item }: { item: Spend }) => (
     <View style={styles.row}>
-      <Text style={styles.cell}>{item.user_id}</Text>
       <Text style={styles.cell}>{item.spend_date}</Text>
       <Text style={styles.cell}>{item.element}</Text>
       <Text style={styles.cell}>{Number(item.price).toFixed(2)}</Text>
-      <Button title="Edit" onPress={() => handleEdit(item)} />
+      <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item)}>
+        <Text style={styles.buttonText}>Edit</Text>
+      </TouchableOpacity>
     </View>
   );
 
@@ -106,19 +131,14 @@ const SpendScreen: React.FC = () => {
 
       {/* Input Form */}
       <View style={styles.form}>
-        <TextInput
-          placeholder="User ID"
-          style={styles.input}
-          keyboardType="numeric"
-          value={newSpend.user_id.toString()}
-          onChangeText={(value) => handleInputChange('user_id', Number(value))}
-        />
-        <TextInput
-          placeholder="Spend Date (YYYY-MM-DD)"
-          style={styles.input}
-          value={newSpend.spend_date}
-          onChangeText={(value) => handleInputChange('spend_date', value)}
-        />
+        <TouchableOpacity onPress={showPicker}>
+          <TextInput
+            placeholder="Spend Date (YYYY-MM-DD)"
+            style={styles.input}
+            value={newSpend.spend_date}
+            editable={false} // Make it read-only, as we're using a date picker
+          />
+        </TouchableOpacity>
         <TextInput
           placeholder="Element"
           style={styles.input}
@@ -132,8 +152,21 @@ const SpendScreen: React.FC = () => {
           value={newSpend.price.toString()}
           onChangeText={(value) => handleInputChange('price', Number(value))}
         />
-        <Button title={isEditing ? 'Update Spend' : 'Add Spend'} onPress={handleSubmit} />
+        <Button
+          title={isEditing ? 'Update Spend' : 'Add Spend'}
+          onPress={handleSubmit}
+        />
       </View>
+
+      {/* Date Picker */}
+      {showDatePicker && (
+        <DateTimePicker
+          value={new Date(newSpend.spend_date)}
+          mode="date"
+          display="default"
+          onChange={onDateChange}
+        />
+      )}
 
       {/* Spend List */}
       <FlatList
@@ -142,7 +175,6 @@ const SpendScreen: React.FC = () => {
         keyExtractor={(item) => item.id?.toString() || ''}
         ListHeaderComponent={
           <View style={styles.row}>
-            <Text style={styles.headerCell}>User ID</Text>
             <Text style={styles.headerCell}>Spend Date</Text>
             <Text style={styles.headerCell}>Element</Text>
             <Text style={styles.headerCell}>Price</Text>
@@ -154,10 +186,12 @@ const SpendScreen: React.FC = () => {
   );
 };
 
+// Styles defined using StyleSheet.create
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: '#F5F5F5',
   },
   title: {
     fontSize: 24,
@@ -184,11 +218,23 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     paddingHorizontal: 5,
+    textAlign: 'center',
   },
   headerCell: {
     flex: 1,
     paddingHorizontal: 5,
     fontWeight: 'bold',
+  },
+  editButton: {
+    backgroundColor: '#6200EE',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#FFF',
+    fontWeight: '500',
   },
 });
 

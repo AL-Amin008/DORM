@@ -5,6 +5,9 @@ import registerRouter from './routes/register';
 import loginRouter from './routes/login';
 import info from './routes/info'; // Ensure the path is correct
 import spendRoutes from './routes/spendRoutes';
+import mealCount from './routes/mealCount';
+
+
 
 
 const app = express();
@@ -40,7 +43,7 @@ app.use('/api', loginRouter);
 app.use('/api', registerRouter);
 app.use('/api', info); 
 app.use('/api', spendRoutes);// Make sure this line is included
-
+app.use('/api', mealCount);
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: Function) => {
     console.error('An error occurred:', err);
