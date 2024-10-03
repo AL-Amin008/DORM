@@ -7,6 +7,8 @@ import info from './routes/info'; // Ensure the path is correct
 import spendRoutes from './routes/spendRoutes';
 import mealCount from './routes/mealCount';
 import meal_rate from './routes/meal_rate';
+import deposit from './routes/deposit';
+import users from './routes/users';
 
 const app = express();
 app.use(cors());
@@ -43,6 +45,8 @@ app.use('/api', info);
 app.use('/api', spendRoutes);// Make sure this line is included
 app.use('/api', mealCount);
 app.use('/api', meal_rate);
+app.use('/api', deposit);
+app.use('/api', users);
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: Function) => {
     console.error('An error occurred:', err);
