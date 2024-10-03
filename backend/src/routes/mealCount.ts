@@ -138,7 +138,7 @@ router.put('/meal/:id', (req: Request, res: Response): void => {
 
         const query = `
             UPDATE meal_count 
-            SET user_id = ?, meal_time = ?, meal_date = ?, meal_number = ?, updated_at = NOW()
+            SET user_id = ?, meal_time = ?, meal_date = ?, meal_number = ?, entry_at = NOW()
             WHERE id = ?
         `;
 
