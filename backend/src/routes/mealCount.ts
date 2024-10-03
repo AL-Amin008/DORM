@@ -8,10 +8,10 @@ const router = express.Router();
 router.get('/meal', (_req: Request, res: Response): void => {
     const query = `
         SELECT meal_count.id, meal_count.meal_time, meal_count.meal_date, meal_count.meal_number, 
-               meal_count.entry_at, users.full_name AS user_name
+               meal_count.entry_at, users.name AS user_name
         FROM meal_count
         JOIN users ON meal_count.user_id = users.id
-    `;  // Fetch meal count along with user name and entry_at timestamp
+    `;
 
     db.query(query, (err, results: RowDataPacket[]) => {
         if (err) {
@@ -28,11 +28,11 @@ router.get('/meal/:id', (req: Request, res: Response): void => {
     const { id } = req.params;
     const query = `
         SELECT meal_count.id, meal_count.meal_time, meal_count.meal_date, meal_count.meal_number, 
-               meal_count.entry_at, users.full_name AS user_name
+               meal_count.entry_at, users.name AS user_name
         FROM meal_count
         JOIN users ON meal_count.user_id = users.id
         WHERE meal_count.id = ?
-    `;  // Fetch specific meal entry along with user name and entry_at timestamp
+    `;
 
     db.query(query, [id], (err, results: RowDataPacket[]) => {
         if (err) {
@@ -79,7 +79,7 @@ router.post('/meal', (req: Request, res: Response): void => {
         const query = `
             INSERT INTO meal_count (user_id, meal_time, meal_date, meal_number, entry_at)
             VALUES (?, ?, ?, ?, NOW())
-        `;  // Insert meal record along with current timestamp for entry_at
+        `;
 
         db.query(query, [user_id, meal_time, meal_date, meal_number], (err, result: ResultSetHeader) => {
             if (err) {
@@ -87,7 +87,25 @@ router.post('/meal', (req: Request, res: Response): void => {
                 res.status(500).json({ message: 'Database query failed', error: err.message });
                 return;
             }
-            res.status(201).json({ message: 'Meal entry added successfully', mealId: result.insertId });
+
+            // Fetch the inserted meal record along with the user's name
+            const fetchMealQuery = `
+                SELECT meal_count.id, meal_count.meal_time, meal_count.meal_date, meal_count.meal_number, 
+                       meal_count.entry_at, users.name AS user_name
+                FROM meal_count
+                JOIN users ON meal_count.user_id = users.id
+                WHERE meal_count.id = ?
+            `;
+
+            db.query(fetchMealQuery, [result.insertId], (err, fetchedMeal: RowDataPacket[]) => {
+                if (err) {
+                    console.error('Error fetching meal:', err);
+                    res.status(500).json({ message: 'Failed to fetch added meal', error: err.message });
+                    return;
+                }
+
+                res.status(201).json({ message: 'Meal entry added successfully', meal: fetchedMeal[0] });
+            });
         });
     });
 });
@@ -144,7 +162,7 @@ router.put('/meal/:id', (req: Request, res: Response): void => {
 // Endpoint to delete a meal entry
 router.delete('/meal/:id', (req: Request, res: Response): void => {
     const { id } = req.params;
-    const query = 'DELETE FROM meal_count WHERE id = ?';  // Updated to match the table name
+    const query = 'DELETE FROM meal_count WHERE id = ?';
 
     db.query(query, [id], (err, result: ResultSetHeader) => {
         if (err) {
