@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import mysql, { RowDataPacket } from 'mysql2'; // Import RowDataPacket
 import bcrypt from 'bcrypt';
-import db from '../db'; // Ensure this points
+import db from '../db'; // Ensure this poin
 
 const router = express.Router();
 
