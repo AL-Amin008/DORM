@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/meal_rate', (_req: Request, res: Response): void => {
     console.log('GET /meal_rate endpoint hit');
     const query = `
-        SELECT user_id, meal_rate
+        SELECT user_id, total_spend, total_meal_count, meal_rate
         FROM meal_rate
     `;
 
@@ -26,7 +26,7 @@ router.get('/meal_rate', (_req: Request, res: Response): void => {
 router.get('/meal_rate/:user_id', (req: Request, res: Response): void => {
     const { user_id } = req.params;
     const query = `
-        SELECT user_id, meal_rate
+        SELECT user_id, total_spend, total_meal_count, meal_rate
         FROM meal_rate
         WHERE user_id = ?
     `;
@@ -47,14 +47,26 @@ router.get('/meal_rate/:user_id', (req: Request, res: Response): void => {
     });
 });
 
-// Endpoint to insert meal rates into the meal_rate table
+// Endpoint to calculate and insert/update meal rates into the meal_rate table
 router.post('/meal_rate', (_req: Request, res: Response): void => {
     const query = `
-        INSERT INTO meal_rate (user_id, meal_rate)
-        SELECT s.user_id, SUM(s.price) / SUM(m.meal_number) AS meal_rate
+        INSERT INTO meal_rate (user_id, total_spend, total_meal_count, meal_rate)
+        SELECT 
+            s.user_id,
+            SUM(s.price) AS total_spend,
+            SUM(m.meal_number) AS total_meal_count,
+            CASE 
+                WHEN SUM(m.meal_number) > 0 THEN SUM(s.price) / SUM(m.meal_number)
+                ELSE 0
+            END AS meal_rate
         FROM spend s
         JOIN mealcount m ON s.user_id = m.user_id
-        GROUP BY s.user_id;
+        GROUP BY s.user_id
+        ON DUPLICATE KEY UPDATE
+            total_spend = VALUES(total_spend),
+            total_meal_count = VALUES(total_meal_count),
+            meal_rate = VALUES(meal_rate),
+            calculated_at = CURRENT_TIMESTAMP;
     `;
 
     db.query(query, (err, result: ResultSetHeader) => {
@@ -63,7 +75,7 @@ router.post('/meal_rate', (_req: Request, res: Response): void => {
             res.status(500).json({ message: 'Database query failed', error: err.message });
             return;
         }
-        res.status(201).json({ message: 'Meal rates calculated and inserted successfully', affectedRows: result.affectedRows });
+        res.status(201).json({ message: 'Meal rates calculated and inserted/updated successfully', affectedRows: result.affectedRows });
     });
 });
 

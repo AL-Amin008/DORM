@@ -5,6 +5,8 @@ import axios from 'axios';
 // Define the MealRate interface
 interface MealRate {
   user_id: number;
+  total_spend: number;
+  total_meal_count: number;
   meal_rate: number;
 }
 
@@ -32,7 +34,9 @@ const MealRateScreen: React.FC = () => {
   const renderMealRateItem = ({ item }: { item: MealRate }) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{item.user_id}</Text>
-      <Text style={styles.cell}>{Number(item.meal_rate).toFixed(2)}</Text>
+      <Text style={styles.cell}>{item.total_spend.toFixed(2)}</Text>
+      <Text style={styles.cell}>{item.total_meal_count}</Text>
+      <Text style={styles.cell}>{item.meal_rate.toFixed(2)}</Text>
     </View>
   );
 
@@ -48,6 +52,8 @@ const MealRateScreen: React.FC = () => {
         ListHeaderComponent={
           <View style={styles.row}>
             <Text style={styles.headerCell}>User ID</Text>
+            <Text style={styles.headerCell}>Total Spend</Text>
+            <Text style={styles.headerCell}>Total Meal Count</Text>
             <Text style={styles.headerCell}>Meal Rate</Text>
           </View>
         }
@@ -84,6 +90,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 5,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
