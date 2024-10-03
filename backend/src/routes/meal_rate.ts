@@ -3,6 +3,9 @@ import mysql, { RowDataPacket } from 'mysql2'; // Import RowDataPacket
 import bcrypt from 'bcrypt';
 import db from '../db'; // Ensure this points to where your db connection is managed
 
+
+
+
 const router = express.Router();
 
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
