@@ -18,7 +18,7 @@ interface Meal {
   id: number;
   user_id: number;
   meal_time: 'morning' | 'noon' | 'night';
-  meal_date: string;
+  meal_date: string;  // Still used in Meal interface
   meal_number: number;
   entry_at: string;
   user_name?: string;
@@ -26,7 +26,7 @@ interface Meal {
 
 const MealScreen = () => {
   const [mealTime, setMealTime] = useState<'morning' | 'noon' | 'night'>('morning');
-  const [mealDate, setMealDate] = useState('');
+  const [mealDate, setMealDate] = useState(new Date().toISOString().split('T')[0]); // Set today's date
   const [mealNumber, setMealNumber] = useState(1);
   const [meals, setMeals] = useState<Meal[]>([]);
   const [userId, setUserId] = useState<number | null>(null);
@@ -78,14 +78,13 @@ const MealScreen = () => {
     const mealData = {
       user_id: userId,
       meal_time: mealTime,
-      meal_date: mealDate,
+      meal_date: mealDate,  // This will now contain today's date
       meal_number: mealNumber,
     };
 
     axios.post('http://localhost:3000/api/meal', mealData)
       .then(() => {
         Alert.alert('Success', 'Meal added successfully.');
-        setMealDate('');
         setMealNumber(1);
         setMealTime('morning');
       })
@@ -110,7 +109,7 @@ const MealScreen = () => {
         style={styles.input}
         placeholder="Enter Date"
         value={mealDate}
-        onChangeText={setMealDate}
+        editable={false} // Optional: Prevent manual editing
       />
 
       <Text style={styles.inputLabel}>Meal Number:</Text>
