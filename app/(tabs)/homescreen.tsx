@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import MealForm from './MealForm'; // Import the MealForm component
 
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#e0f7fa', // Light blue gradient background
+    backgroundColor: '#e0f7fa',
     paddingBottom: 20,
   },
   title: {
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-    color: '#00796b', // Teal color for a refreshing look
+    color: '#00796b',
   },
   loading: {
     textAlign: 'center',
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   error: {
     textAlign: 'center',
     fontSize: 18,
-    color: '#d32f2f', // Red for errors
+    color: '#d32f2f',
   },
   noMeals: {
     textAlign: 'center',
@@ -117,45 +117,15 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 16,
-    elevation: 5, // Shadow effect for elevation
+    elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     borderWidth: 0.5,
-    borderColor: '#00796b', // Teal border color
+    borderColor: '#00796b',
     marginHorizontal: 16,
     paddingHorizontal: 24,
-  },
-  formTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#00796b',
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  inputField: {
-    backgroundColor: '#f5f5f5',
-    borderColor: '#00796b',
-    borderWidth: 1,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    marginBottom: 12,
-    fontSize: 16,
-    color: '#333',
-  },
-  submitButton: {
-    backgroundColor: '#00796b',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#ffffff',
-    fontWeight: '500',
-    fontSize: 16,
   },
   mealCard: {
     marginBottom: 16,
@@ -166,24 +136,24 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    backgroundColor: '#ffffff', // Card background color
+    backgroundColor: '#ffffff',
     borderLeftWidth: 5,
-    borderLeftColor: '#00796b', // Border color to indicate section separation
+    borderLeftColor: '#00796b',
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#00796b', // Teal color for meal name
+    color: '#00796b',
   },
   cardDescription: {
     fontSize: 16,
-    color: '#4a4a4a', // Slightly darker color for the description
+    color: '#4a4a4a',
     marginVertical: 10,
     lineHeight: 24,
   },
   cardSubtitle: {
     fontSize: 14,
-    color: '#00796b', // Teal color for meal time and date
+    color: '#00796b',
     marginBottom: 8,
   },
   editButton: {
@@ -193,7 +163,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 10,
   },
-  editButtonText: {
+  buttonText: {
     color: '#FFF',
     fontWeight: '500',
     fontSize: 16,
