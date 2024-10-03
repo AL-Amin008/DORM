@@ -3,6 +3,7 @@ import mysql, { RowDataPacket } from 'mysql2'; // Import RowDataPacket
 import bcrypt from 'bcrypt';
 import db from '../db'; // Ensure
 
+
 const router = express.Router();
 
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
