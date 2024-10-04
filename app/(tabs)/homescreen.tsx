@@ -23,7 +23,7 @@ const Meals: React.FC = () => {
   const fetchMeals = () => {
     setLoading(true);
     axios
-      .get('http://192.168.0.106:3000/api/meals')
+      .get('http://10.10.200.128:3000/api/meals')
       .then((response) => {
         const sortedMeals = response.data.meals.sort((a: Meal, b: Meal) => {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();

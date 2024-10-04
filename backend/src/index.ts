@@ -7,6 +7,8 @@ import info from './routes/info';
 import spendRoutes from './routes/spendRoutes';
 import mealCount from './routes/mealCount';
 import meal_rate from './routes/meal_rate';
+import overall_calculation from './routes/overall_calculation';
+import deposit from './routes/deposit';
 
 
 
@@ -46,7 +48,8 @@ app.use('/api', info);
 app.use('/api', spendRoutes);
 app.use('/api', mealCount);
 app.use('/api', meal_rate);
-
+app.use('/api', overall_calculation);
+app.use('/api', deposit);
 app.use((err: Error, req: Request, res: Response, next: Function) => {
     console.error('An error occurred:', err);
     res.status(500).json({ message: 'Internal Server Error' });

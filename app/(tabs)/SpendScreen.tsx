@@ -27,7 +27,7 @@ const SpendScreen: React.FC = () => {
   // Fetch existing spend records from the API
   const fetchSpendData = () => {
     axios
-      .get('http://192.168.0.106:3000/api/spend')
+      .get('http://localhost:3000/api/spend')
       .then((response) => {
         setSpendList(response.data.spends);
       })
@@ -68,7 +68,7 @@ const SpendScreen: React.FC = () => {
   const handleSubmit = () => {
     if (isEditing && editingId !== null) {
       axios
-        .put(`http://192.168.0.106:3000/api/spend/${editingId}`, newSpend)
+        .put(`http://localhost:3000/api/spend/${editingId}`, newSpend)
         .then(() => {
           fetchSpendData();
           resetForm();
@@ -78,7 +78,7 @@ const SpendScreen: React.FC = () => {
         });
     } else {
       axios
-        .post('http://192.168.0.106:3000/api/spend', newSpend)
+        .post('http://localhost:3000/api/spend', newSpend)
         .then(() => {
           fetchSpendData();
           resetForm();

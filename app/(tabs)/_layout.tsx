@@ -30,9 +30,11 @@ export default function TabLayout() {
         name="meal_rate"
         options={{
           title: 'Meal Rate',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'fast-food' : 'fast-food-outline'} color={color} />
-          ),
+          // tabBarIcon: ({ color, focused }) => (
+          //   <TabBarIcon name={focused ? 'fast-food' : 'fast-food-outline'} color={color} />
+          // ),
+
+          tabBarButton: () => null,
         }}
       />
       
@@ -80,11 +82,20 @@ export default function TabLayout() {
       
       {/* Wallet Screen */}
       <Tabs.Screen
-        name="wallet"
+        name="overall_calculation"
         options={{
-          title: 'Wallet',
+          title: 'My Calculation',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'cash' : 'cash-outline'} color={color} />
+          ),
+        }}
+      />
+       <Tabs.Screen
+        name="deposite"
+        options={{
+          title: 'Depositr',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'cash' : 'cart'} color={color} />
           ),
         }}
       />
