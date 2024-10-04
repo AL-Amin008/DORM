@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, FlatList, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { Picker } from '@react-native-picker/picker'; // Import Picker from the new package
+import { Picker } from '@react-native-picker/picker'; 
 import axios from 'axios';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-// Define the Deposit interface
 interface Deposit {
   id?: number;
   user_id: number;
@@ -29,10 +28,9 @@ const DepositScreen: React.FC = () => {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
 
-  // Fetch users from the API
   const fetchUsers = () => {
     axios
-      .get('http://localhost:3000/api/users')
+      .get('http://10.10.200.128:3000/api/users')
       .then((response) => {
         setUsers(response.data.users);
       })
@@ -41,12 +39,10 @@ const DepositScreen: React.FC = () => {
       });
   };
 
-  // Fetch existing deposit records from the API
   const fetchDepositData = () => {
     axios
-      .get('http://localhost:3000/api/deposit')
+      .get('http://10.10.200.128:3000/api/deposit')
       .then((response) => {
-        console.log(response.data.deposits); // Log the deposits to check their structure
         setDepositList(response.data.deposits);
       })
       .catch((error) => {
@@ -54,13 +50,11 @@ const DepositScreen: React.FC = () => {
       });
   };
 
-  // Refresh data when component mounts or new data is submitted
   useEffect(() => {
     fetchUsers();
     fetchDepositData();
   }, []);
 
-  // Handle input field changes
   const handleInputChange = (field: string, value: string | number) => {
     setNewDeposit({
       ...newDeposit,
@@ -68,12 +62,10 @@ const DepositScreen: React.FC = () => {
     });
   };
 
-  // Show date picker
   const showPicker = () => {
     setShowDatePicker(true);
   };
 
-  // Handle date change
   const onDateChange = (event: any, selectedDate: Date | undefined) => {
     const currentDate = selectedDate || new Date();
     setNewDeposit({
@@ -83,7 +75,6 @@ const DepositScreen: React.FC = () => {
     setShowDatePicker(false);
   };
 
-  // Submit new or edited deposit record
   const handleSubmit = () => {
     if (newDeposit.user_id === 0) {
       Alert.alert('Error', 'Please select a user');
@@ -98,7 +89,7 @@ const DepositScreen: React.FC = () => {
 
     if (isEditing && editingId !== null) {
       axios
-        .put(`http://localhost:3000/api/deposit/${editingId}`, depositPayload)
+        .put(`http://10.10.200.128:3000/api/deposit/${editingId}`, depositPayload)
         .then(() => {
           fetchDepositData();
           resetForm();
@@ -108,7 +99,7 @@ const DepositScreen: React.FC = () => {
         });
     } else {
       axios
-        .post('http://localhost:3000/api/deposit', depositPayload)
+        .post('http://10.10.200.128:3000/api/deposit', depositPayload)
         .then(() => {
           fetchDepositData();
           resetForm();
@@ -119,7 +110,6 @@ const DepositScreen: React.FC = () => {
     }
   };
 
-  // Reset form after submission or editing
   const resetForm = () => {
     setNewDeposit({
       user_id: 0,
@@ -130,7 +120,6 @@ const DepositScreen: React.FC = () => {
     setEditingId(null);
   };
 
-  // Handle editing a deposit record
   const handleEdit = (item: Deposit) => {
     setIsEditing(true);
     setEditingId(item.id || null);
@@ -141,19 +130,17 @@ const DepositScreen: React.FC = () => {
     });
   };
 
-  // Render individual deposit items
   const renderDepositItem = ({ item }: { item: Deposit }) => {
-    const amount = typeof item.amount === 'number' ? item.amount : parseFloat(item.amount); // Ensure it's a number
+    const amount = typeof item.amount === 'number' ? item.amount : parseFloat(item.amount);
     
-    // Find the user name based on user_id
     const user = users.find(user => user.id === item.user_id);
-    const userName = user ? user.name : 'Unknown User'; // Fallback if user is not found
+    const userName = user ? user.name : 'Unknown User'; 
 
     return (
       <View style={styles.row}>
         <Text style={styles.cell}>{item.deposit_date}</Text>
-        <Text style={styles.cell}>{amount.toFixed(2)}</Text> {/* Safely convert to number and call toFixed */}
-        <Text style={styles.cell}>{userName}</Text> {/* Displaying user name */}
+        <Text style={styles.cell}>{amount.toFixed(2)}</Text>
+        <Text style={styles.cell}>{userName}</Text> 
         <TouchableOpacity style={styles.editButton} onPress={() => handleEdit(item)}>
           <Text style={styles.buttonText}>Edit</Text>
         </TouchableOpacity>
@@ -165,20 +152,19 @@ const DepositScreen: React.FC = () => {
     <View style={styles.container}>
       <Text style={styles.title}>Deposit Records</Text>
 
-      {/* Input Form */}
       <View style={styles.form}>
         <TouchableOpacity onPress={showPicker}>
           <TextInput
             placeholder="Deposit Date (YYYY-MM-DD)"
             style={styles.input}
             value={newDeposit.deposit_date}
-            editable={false} // Make it read-only, as we're using a date picker
+            editable={false} 
           />
         </TouchableOpacity>
         <Picker
           selectedValue={newDeposit.user_id}
           style={styles.input}
-          onValueChange={(itemValue: number) => handleInputChange('user_id', itemValue)} // Specify type for itemValue
+          onValueChange={(itemValue: number) => handleInputChange('user_id', itemValue)}
         >
           <Picker.Item label="Select User" value={0} />
           {users.map((user) => (
@@ -190,7 +176,7 @@ const DepositScreen: React.FC = () => {
           style={styles.input}
           keyboardType="numeric"
           value={newDeposit.amount.toString()}
-          onChangeText={(value) => handleInputChange('amount', Number(value))} // Convert input to number
+          onChangeText={(value) => handleInputChange('amount', Number(value))}
         />
         <Button
           title={isEditing ? 'Update Deposit' : 'Add Deposit'}
@@ -198,7 +184,6 @@ const DepositScreen: React.FC = () => {
         />
       </View>
 
-      {/* Date Picker */}
       {showDatePicker && (
         <DateTimePicker
           value={new Date(newDeposit.deposit_date)}
@@ -208,7 +193,6 @@ const DepositScreen: React.FC = () => {
         />
       )}
 
-      {/* Deposit List */}
       <FlatList
         data={depositList}
         renderItem={renderDepositItem}
@@ -217,7 +201,7 @@ const DepositScreen: React.FC = () => {
           <View style={styles.row}>
             <Text style={styles.headerCell}>Deposit Date</Text>
             <Text style={styles.headerCell}>Amount</Text>
-            <Text style={styles.headerCell}>User Name</Text> {/* New header for user name */}
+            <Text style={styles.headerCell}>User Name</Text> 
             <Text style={styles.headerCell}>Actions</Text>
           </View>
         }
@@ -226,7 +210,6 @@ const DepositScreen: React.FC = () => {
   );
 };
 
-// Styles defined using StyleSheet.create
 const styles = StyleSheet.create({
   container: {
     flex: 1,

@@ -23,7 +23,7 @@ const Meals: React.FC = () => {
   const fetchMeals = () => {
     setLoading(true);
     axios
-      .get('http://10.10.200.128:3000/api/meals')
+      .get('http://10.10.200.128:3000/api/meals') // Use your local API URL here
       .then((response) => {
         const sortedMeals = response.data.meals.sort((a: Meal, b: Meal) => {
           return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#e0f7fa',
+    backgroundColor: '#e0f7fa', // Light blue gradient background
     paddingBottom: 20,
   },
   title: {
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center',
-    color: '#00796b',
+    color: '#00796b', // Teal color for a refreshing look
   },
   loading: {
     textAlign: 'center',
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
   error: {
     textAlign: 'center',
     fontSize: 18,
-    color: '#d32f2f',
+    color: '#d32f2f', // Red for errors
   },
   noMeals: {
     textAlign: 'center',
@@ -117,13 +117,13 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     marginBottom: 16,
-    elevation: 5,
+    elevation: 5, // Shadow effect for elevation
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     borderWidth: 0.5,
-    borderColor: '#00796b',
+    borderColor: '#00796b', // Teal border color
     marginHorizontal: 16,
     paddingHorizontal: 24,
   },
@@ -136,24 +136,24 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
     shadowRadius: 5,
-    backgroundColor: '#ffffff',
+    backgroundColor: '#ffffff', // Card background color
     borderLeftWidth: 5,
-    borderLeftColor: '#00796b',
+    borderLeftColor: '#00796b', // Border color to indicate section separation
   },
   cardTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#00796b',
+    color: '#00796b', // Teal color for meal name
   },
   cardDescription: {
     fontSize: 16,
-    color: '#4a4a4a',
+    color: '#4a4a4a', // Slightly darker color for the description
     marginVertical: 10,
     lineHeight: 24,
   },
   cardSubtitle: {
     fontSize: 14,
-    color: '#00796b',
+    color: '#00796b', // Teal color for meal time and date
     marginBottom: 8,
   },
   editButton: {

@@ -48,7 +48,7 @@ const MealScreen = () => {
   useEffect(() => {
     if (!userId) return;
 
-    axios.get('http://localhost:3000/api/meal')
+    axios.get('http://10.10.200.128:3000/api/meal')
       .then((response) => {
         console.log('Fetched meals:', response.data); // Debug API response
         const fetchedMeals = response.data.meals || [];
@@ -82,7 +82,7 @@ const MealScreen = () => {
       meal_number: mealNumber,
     };
 
-    axios.post('http://localhost:3000/api/meal', mealData)
+    axios.post('http://10.10.200.128:3000/api/meal', mealData)
       .then(() => {
         Alert.alert('Success', 'Meal added successfully.');
         setMealNumber(1);

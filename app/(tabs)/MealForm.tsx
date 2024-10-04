@@ -2,61 +2,56 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import axios from 'axios';
 
+// Define props interface
 interface MealFormProps {
-  onSuccess: () => void; // Function to call on success
-  mealId?: number; // Optional meal ID for editing
+  onSuccess: () => void;
+  mealId?: number;
 }
 
 const MealForm: React.FC<MealFormProps> = ({ onSuccess, mealId }) => {
-  const [mealName, setMealName] = useState('');
-  const [description, setDescription] = useState('');
-  const [mealTime, setMealTime] = useState('');
-  const [mealDate, setMealDate] = useState('');
-  const [loading, setLoading] = useState<boolean>(false);
+  const [mealName, setMealName] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [mealTime, setMealTime] = useState<string>('');
+  const [mealDate, setMealDate] = useState<string>('');
 
-  // Fetch meal details if editing
   useEffect(() => {
     if (mealId) {
-      axios.get(`http://192.168.0.106:3000/api/meals/${mealId}`)
+      // Fetch existing meal data if editing
+      axios.get(`http://10.10.200.128:3000/api/meals/${mealId}`) // Adjust the URL as needed
         .then(response => {
-          const meal = response.data.meal;
+          const meal = response.data;
           setMealName(meal.meal_name);
           setDescription(meal.description);
           setMealTime(meal.meal_time);
           setMealDate(meal.meal_date);
         })
         .catch(err => {
-          console.error('Failed to fetch meal details', err);
+          console.error('Failed to fetch meal data:', err);
         });
+    } else {
+      // Reset form for new meal
+      setMealName('');
+      setDescription('');
+      setMealTime('');
+      setMealDate('');
     }
   }, [mealId]);
 
   const handleSubmit = () => {
-    setLoading(true);
-    const mealData = {
-      meal_name: mealName,
-      description,
-      meal_time: mealTime,
-      meal_date: mealDate,
-    };
+    const mealData = { meal_name: mealName, description, meal_time: mealTime, meal_date: mealDate };
+    
+    const url = mealId 
+      ? `http://10.10.200.128:3000/api/meals/${mealId}` // Update existing meal
+      : 'http://10.10.200.128:3000/api/meals'; // Add new meal
 
-    const request = mealId
-      ? axios.put(`http://192.168.0.106:3000/api/meals/${mealId}`, mealData)
-      : axios.post('http://192.168.0.106:3000/api/meals', mealData);
+    const method = mealId ? 'PUT' : 'POST';
 
-    request
+    axios({ method, url, data: mealData })
       .then(() => {
-        onSuccess(); // Call onSuccess to refresh meal list
-        setMealName('');
-        setDescription('');
-        setMealTime('');
-        setMealDate('');
+        onSuccess(); // Refresh meal list
       })
       .catch(err => {
-        console.error('Failed to save meal', err);
-      })
-      .finally(() => {
-        setLoading(false);
+        console.error('Failed to save meal:', err);
       });
   };
 
@@ -87,35 +82,35 @@ const MealForm: React.FC<MealFormProps> = ({ onSuccess, mealId }) => {
         value={mealDate}
         onChangeText={setMealDate}
       />
-      <Button title={loading ? 'Saving...' : 'Save Meal'} onPress={handleSubmit} disabled={loading} />
+      <Button title={mealId ? 'Update Meal' : 'Add Meal'} onPress={handleSubmit} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   formContainer: {
-    marginBottom: 20,
-    padding: 16,
-    borderRadius: 10,
     backgroundColor: '#ffffff',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 16,
     elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
   formTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 16,
+    textAlign: 'center',
   },
   inputField: {
-    height: 40,
-    borderColor: '#00796b',
     borderWidth: 1,
+    borderColor: '#00796b',
     borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 10,
+    padding: 10,
+    marginBottom: 12,
   },
 });
 

@@ -16,7 +16,7 @@ const Router: React.FC = () => {
   // Fetch user data from the API
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/users'); // Update the API endpoint
+      const response = await axios.get('http://10.10.200.128:3000/api/users'); // Update the API endpoint
       console.log('API Response:', response.data); // Log the response for debugging
       setUsers(response.data.users); // Adjust based on the actual API response structure
     } catch (error) {

@@ -27,12 +27,13 @@ const SpendScreen: React.FC = () => {
   // Fetch existing spend records from the API
   const fetchSpendData = () => {
     axios
-      .get('http://localhost:3000/api/spend')
+      .get('http://10.10.200.128:3000/api/spend') // Ensure the URL is correct
       .then((response) => {
         setSpendList(response.data.spends);
       })
       .catch((error) => {
         console.error('Error fetching spend data:', error);
+        Alert.alert('Error', 'Could not fetch spend data. Please try again later.');
       });
   };
 
@@ -68,23 +69,25 @@ const SpendScreen: React.FC = () => {
   const handleSubmit = () => {
     if (isEditing && editingId !== null) {
       axios
-        .put(`http://localhost:3000/api/spend/${editingId}`, newSpend)
+        .put(`http://10.10.200.128:3000/api/spend/${editingId}`, newSpend)
         .then(() => {
           fetchSpendData();
           resetForm();
         })
         .catch((error) => {
           console.error('Error updating spend record:', error);
+          Alert.alert('Error', 'Could not update spend record. Please try again later.');
         });
     } else {
       axios
-        .post('http://localhost:3000/api/spend', newSpend)
+        .post('http://10.10.200.128:3000/api/spend', newSpend)
         .then(() => {
           fetchSpendData();
           resetForm();
         })
         .catch((error) => {
           console.error('Error adding spend record:', error);
+          Alert.alert('Error', 'Could not add spend record. Please try again later.');
         });
     }
   };

@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, FlatList, ScrollView, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import {
+  View,
+  Text,
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Dimensions,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import axios from 'axios';
 import { PieChart } from 'react-native-chart-kit';
 
@@ -23,7 +31,7 @@ const OverallCalculationScreen: React.FC = () => {
   // Fetch overall calculation data from the API
   const fetchOverallCalculations = () => {
     axios
-      .get('http://localhost:3000/api/overall_calculation')
+      .get('http://10.10.200.128:3000/api/overall_calculation') // Update your API URL here
       .then((response) => {
         console.log('API Response:', response.data); // Log the full response
         const calculations = response.data.overallCalculations;
@@ -209,10 +217,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   hoverContainer: {
-    backgroundColor: '#f9f9f9',
     padding: 10,
-    borderRadius: 5,
-    marginBottom: 20,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+    marginBottom: 10,
   },
   hoverText: {
     fontSize: 16,
@@ -223,31 +231,33 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   chartColumn: {
-    width: '48%', // Make columns take up half the width
+    flex: 1,
+    marginHorizontal: 5,
   },
   chartTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
     textAlign: 'center',
+    marginBottom: 10,
   },
   tableTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'center',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
   },
   cell: {
-    width: '16%', // Adjust width to fit your layout
+    flex: 1,
     textAlign: 'center',
   },
   headerCell: {
-    width: '16%',
+    flex: 1,
     fontWeight: 'bold',
     textAlign: 'center',
   },
