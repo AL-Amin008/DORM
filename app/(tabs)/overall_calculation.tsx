@@ -3,29 +3,26 @@ import { View, Text, FlatList, ScrollView, StyleSheet, Dimensions, TouchableWith
 import axios from 'axios';
 import { PieChart } from 'react-native-chart-kit';
 
-// Define the OverallCalculation interface with required columns
 interface OverallCalculation {
   user_id: number;
-  total_send: number;
+  total_spend: number;
   total_meal_amount: number;
   total_deposit: number;
   total_cost: number;
-  due_or_give: number; // Assuming this is a number now
+  due_or_give: number;
 }
 
 const OverallCalculationScreen: React.FC = () => {
   const [overallCalculations, setOverallCalculations] = useState<OverallCalculation[]>([]);
   const [overallCalculation, setOverallCalculation] = useState<number>(0);
-  const [dueData, setDueData] = useState<{ name: string; amount: number }[]>([]);
-  const [giveData, setGiveData] = useState<{ name: string; amount: number }[]>([]);
-  const [hoverData, setHoverData] = useState<{ name: string; amount: number } | null>(null); // State for hover data
+  const [dueData, setDueData] = useState<{ name: string; amount: number; percentage: number }[]>([]);
+  const [giveData, setGiveData] = useState<{ name: string; amount: number; percentage: number }[]>([]);
+  const [hoverData, setHoverData] = useState<{ name: string; amount: number; percentage: number } | null>(null);
 
-  // Fetch overall calculation data from the API
   const fetchOverallCalculations = () => {
     axios
       .get('http://localhost:3000/api/overall_calculation')
       .then((response) => {
-        console.log('API Response:', response.data); // Log the full response
         const calculations = response.data.overallCalculations;
         setOverallCalculations(calculations);
         calculateOverallCalculation(calculations);
@@ -36,27 +33,39 @@ const OverallCalculationScreen: React.FC = () => {
       });
   };
 
-  // Calculate overall calculation
   const calculateOverallCalculation = (calculations: OverallCalculation[]) => {
-    const totalSend = calculations.reduce((sum, calculation) => sum + (Number(calculation.total_send) || 0), 0);
+    const totalSpend = calculations.reduce((sum, calculation) => sum + (Number(calculation.total_spend) || 0), 0);
     const totalMealAmount = calculations.reduce((sum, calculation) => sum + (Number(calculation.total_meal_amount) || 0), 0);
-    const calculation = totalMealAmount > 0 ? totalSend / totalMealAmount : 0; // Avoid division by zero
+    const calculation = totalMealAmount > 0 ? totalSpend / totalMealAmount : 0;
     setOverallCalculation(calculation);
   };
 
-  // Prepare data for pie charts
   const prepareChartData = (calculations: OverallCalculation[]) => {
     const dueAmounts = calculations.map(calculation => ({
       name: `User ${calculation.user_id}`,
-      amount: Number(calculation.total_deposit) || 0, // Ensure numeric
-    }));
-    const giveAmounts = calculations.map(calculation => ({
-      name: `User ${calculation.user_id}`,
-      amount: Number(calculation.total_send) || 0, // Ensure numeric
+      amount: Number(calculation.total_deposit) || 0,
     }));
 
-    setDueData(dueAmounts);
-    setGiveData(giveAmounts);
+    const giveAmounts = calculations.map(calculation => ({
+      name: `User ${calculation.user_id}`,
+      amount: Number(calculation.total_spend) || 0,
+    }));
+
+    const totalDue = dueAmounts.reduce((sum, data) => sum + data.amount, 0);
+    const totalGive = giveAmounts.reduce((sum, data) => sum + data.amount, 0);
+
+    const dueDataWithPercentage = dueAmounts.map(item => ({
+      ...item,
+      percentage: totalDue > 0 ? (item.amount / totalDue) * 100 : 0,
+    }));
+
+    const giveDataWithPercentage = giveAmounts.map(item => ({
+      ...item,
+      percentage: totalGive > 0 ? (item.amount / totalGive) * 100 : 0,
+    }));
+
+    setDueData(dueDataWithPercentage);
+    setGiveData(giveDataWithPercentage);
   };
 
   useEffect(() => {
@@ -66,7 +75,7 @@ const OverallCalculationScreen: React.FC = () => {
   const renderOverallCalculationItem = ({ item }: { item: OverallCalculation }) => (
     <View style={styles.row}>
       <Text style={styles.cell}>{item.user_id}</Text>
-      <Text style={styles.cell}>{Number(item.total_send || 0).toFixed(2)}</Text>
+      <Text style={styles.cell}>{Number(item.total_spend || 0).toFixed(2)}</Text>
       <Text style={styles.cell}>{Number(item.total_meal_amount || 0).toFixed(2)}</Text>
       <Text style={styles.cell}>{Number(item.total_deposit || 0).toFixed(2)}</Text>
       <Text style={styles.cell}>{Number(item.total_cost || 0).toFixed(2)}</Text>
@@ -74,15 +83,17 @@ const OverallCalculationScreen: React.FC = () => {
     </View>
   );
 
-  // Define colors for the pie charts
-  const dueChartColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF']; // Colors for due amounts
-  const giveChartColors = ['#FF9F40', '#4BC0C0', '#FF6384', '#36A2EB', '#FFCE56']; // Colors for give amounts
+  const dueChartColors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'];
+  const giveChartColors = ['#FF9F40', '#4BC0C0', '#FF6384', '#36A2EB', '#FFCE56'];
 
-  // Function to handle chart press
-  const handleChartPress = (data: { index: number; chartData: any[] }, chartType: 'due' | 'give') => {
-    if (data) {
-      const selectedData = chartType === 'due' ? dueData[data.index] : giveData[data.index];
-      setHoverData(selectedData);
+  const handleChartPress = (index: number, chartType: 'due' | 'give') => {
+    const selectedData = chartType === 'due' ? dueData[index] : giveData[index];
+    if (selectedData) {
+      setHoverData({
+        name: selectedData.name,
+        amount: selectedData.amount,
+        percentage: selectedData.percentage,
+      });
     }
   };
 
@@ -96,6 +107,7 @@ const OverallCalculationScreen: React.FC = () => {
         <View style={styles.hoverContainer}>
           <Text style={styles.hoverText}>Name: {hoverData.name}</Text>
           <Text style={styles.hoverText}>Amount: {hoverData.amount.toFixed(2)}</Text>
+          <Text style={styles.hoverText}>Percentage: {hoverData.percentage.toFixed(2)}%</Text>
         </View>
       )}
 
@@ -106,25 +118,26 @@ const OverallCalculationScreen: React.FC = () => {
           <TouchableWithoutFeedback
             onPress={(e) => {
               const { locationX } = e.nativeEvent;
-              const index = Math.floor((locationX / (Dimensions.get('window').width / 2.2)) * dueData.length);
+              const chartWidth = Dimensions.get('window').width / 2.2; // Chart width
+              const index = Math.floor((locationX / chartWidth) * dueData.length);
               if (index < dueData.length) {
-                handleChartPress({ index, chartData: dueData }, 'due');
+                handleChartPress(index, 'due');
               }
             }}
           >
             <PieChart
               data={dueData.map((item, index) => ({
                 ...item,
-                color: dueChartColors[index % dueChartColors.length], // Use colors in rotation
+                color: dueChartColors[index % dueChartColors.length],
               }))}
-              width={Dimensions.get('window').width / 2.2} // Responsive width
-              height={150} // Set height for pie chart
+              width={Dimensions.get('window').width / 2.2}
+              height={150}
               chartConfig={{
                 backgroundColor: '#ffffff',
                 backgroundGradientFrom: '#ffffff',
                 backgroundGradientTo: '#ffffff',
                 decimalPlaces: 2,
-                color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`, // Default color
+                color: (opacity = 1) => `rgba(255, 0, 0, ${opacity})`,
                 style: {
                   borderRadius: 16,
                 },
@@ -142,25 +155,26 @@ const OverallCalculationScreen: React.FC = () => {
           <TouchableWithoutFeedback
             onPress={(e) => {
               const { locationX } = e.nativeEvent;
-              const index = Math.floor((locationX / (Dimensions.get('window').width / 2.2)) * giveData.length);
+              const chartWidth = Dimensions.get('window').width / 2.2; // Chart width
+              const index = Math.floor((locationX / chartWidth) * giveData.length);
               if (index < giveData.length) {
-                handleChartPress({ index, chartData: giveData }, 'give');
+                handleChartPress(index, 'give');
               }
             }}
           >
             <PieChart
               data={giveData.map((item, index) => ({
                 ...item,
-                color: giveChartColors[index % giveChartColors.length], // Use colors in rotation
+                color: giveChartColors[index % giveChartColors.length],
               }))}
-              width={Dimensions.get('window').width / 2.2} // Responsive width
-              height={150} // Set height for pie chart
+              width={Dimensions.get('window').width / 2.2}
+              height={150}
               chartConfig={{
                 backgroundColor: '#ffffff',
                 backgroundGradientFrom: '#ffffff',
                 backgroundGradientTo: '#ffffff',
                 decimalPlaces: 2,
-                color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`, // Default color
+                color: (opacity = 1) => `rgba(0, 0, 255, ${opacity})`,
                 style: {
                   borderRadius: 16,
                 },
@@ -174,21 +188,19 @@ const OverallCalculationScreen: React.FC = () => {
         </View>
       </View>
 
-      {/* Overall Calculations Table */}
       <Text style={styles.tableTitle}>Overall Calculations Table</Text>
       <View style={styles.row}>
         <Text style={styles.headerCell}>User ID</Text>
-        <Text style={styles.headerCell}>Total Send</Text>
+        <Text style={styles.headerCell}>Total Spend</Text>
         <Text style={styles.headerCell}>Total Meal Amount</Text>
         <Text style={styles.headerCell}>Total Deposit</Text>
         <Text style={styles.headerCell}>Total Cost</Text>
-        <Text style={styles.headerCell}>Due/Give</Text>
+        <Text style={styles.headerCell}>Due or Give</Text>
       </View>
       <FlatList
         data={overallCalculations}
         renderItem={renderOverallCalculationItem}
         keyExtractor={(item) => item.user_id.toString()}
-        contentContainerStyle={{ paddingBottom: 20 }} // Add some padding at the bottom
       />
     </ScrollView>
   );
@@ -196,8 +208,8 @@ const OverallCalculationScreen: React.FC = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
     padding: 20,
+    flexGrow: 1,
   },
   title: {
     fontSize: 24,
@@ -209,10 +221,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   hoverContainer: {
-    backgroundColor: '#f9f9f9',
-    padding: 10,
-    borderRadius: 5,
     marginBottom: 20,
+    padding: 10,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5,
   },
   hoverText: {
     fontSize: 16,
@@ -223,33 +235,38 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   chartColumn: {
-    width: '48%', // Make columns take up half the width
+    width: '48%',
   },
   chartTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-    textAlign: 'center',
   },
   tableTitle: {
     fontSize: 20,
     fontWeight: 'bold',
+    marginTop: 20,
     marginBottom: 10,
-    textAlign: 'center',
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 10,
+    marginVertical: 5,
   },
   cell: {
-    width: '16%', // Adjust width to fit your layout
+    flex: 1,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: '#ccc',
     textAlign: 'center',
   },
   headerCell: {
-    width: '16%',
+    flex: 1,
     fontWeight: 'bold',
     textAlign: 'center',
+    padding: 10,
+    borderBottomWidth: 2,
+    borderColor: '#000',
   },
 });
 

@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/overall_calculation', (_req: Request, res: Response): void => {
     console.log('GET /overall_calculation endpoint hit');
     const query = `
-        SELECT user_id, total_spend AS total_send, total_meal_count AS total_meal_amount, total_deposit, total_cost, due_or_give
+        SELECT user_id, total_spend, total_meal_count AS total_meal_amount, total_deposit, total_cost, due_or_give
         FROM overall_calculation
     `;
 
@@ -26,7 +26,7 @@ router.get('/overall_calculation', (_req: Request, res: Response): void => {
 router.get('/overall_calculation/:user_id', (req: Request, res: Response): void => {
     const { user_id } = req.params;
     const query = `
-        SELECT user_id, total_spend AS total_send, total_meal_count AS total_meal_amount, total_deposit, total_cost, due_or_give
+        SELECT user_id, total_spend, total_meal_count AS total_meal_amount, total_deposit, total_cost, due_or_give
         FROM overall_calculation
         WHERE user_id = ?
     `;
