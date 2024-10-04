@@ -46,6 +46,14 @@ export default function TabLayout() {
           tabBarButton: () => null,  // Hides the screen from the tab bar
         }}
       />
+
+<Tabs.Screen
+        name="wallet"
+        options={{
+          title: 'Meal Form',
+          tabBarButton: () => null,  // Hides the screen from the tab bar
+        }}
+      />
       
       {/* Meal Screen */}
       <Tabs.Screen
@@ -91,11 +99,11 @@ export default function TabLayout() {
         }}
       />
        <Tabs.Screen
-        name="deposite"
+        name="deposit"
         options={{
-          title: 'Depositr',
+          title: 'Deposit',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'cash' : 'cart'} color={color} />
+            <TabBarIcon name={focused ? 'cart' : 'cart'} color={color} />
           ),
         }}
       />

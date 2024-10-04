@@ -37,7 +37,7 @@ const MealScreen = () => {
         if (storedUserId) {
           setUserId(Number(storedUserId));
         } else {
-          Alert.alert('Error', 'User  not logged in');
+          Alert.alert('Error', 'User   not logged in');
         }
       })
       .catch(() => {
@@ -71,7 +71,7 @@ const MealScreen = () => {
 
   const handleMealSubmit = () => {
     if (!userId) {
-      Alert.alert('Error', 'User  not logged in');
+      Alert.alert('Error', 'User   not logged in');
       return;
     }
 
@@ -98,7 +98,13 @@ const MealScreen = () => {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Meal Entry</Text>
       <Text style={styles.inputLabel}>Meal Time:</Text>
-      <PickerComponent value={mealTime} onChange={(value: string | ((prevState: "morning" | "noon" | "night") => "morning" | "noon" | "night")) => setMealTime(value)}>
+      <PickerComponent value={mealTime} onChange={(value: string | ((prevState: "morning" | "noon" | "night") => "morning" | "noon" | "night")) => {
+        if (value === 'morning' || value === 'noon' || value === 'night') {
+          setMealTime(value);
+        } else {
+          console.error(`Invalid meal time: ${value}`);
+        }
+      }}>
         <option value="morning">Morning</option>
         <option value="noon">Noon</option>
         <option value="night">Night</option>
@@ -118,79 +124,79 @@ const MealScreen = () => {
         placeholder="Enter Meal Number"
         value={mealNumber.toString()}
         onChangeText={(text) => setMealNumber(Number(text))}
-        keyboardType="numeric"
-      />
-
-      <Button title="Submit" onPress={handleMealSubmit} />
-
-      <Text style={styles.title}>Meal Records</Text>
-      {Object.keys(sortedMeals).length > 0 ? (
-        Object.keys(sortedMeals).map((dateKey) => (
-          <View key={dateKey} style={styles.mealRecord}>
-            <Text style={styles.mealRecordDate}>{dateKey}</Text>
-            {sortedMeals[dateKey].map((meal: { id: React.Key | null | undefined; user_name: any; meal_time: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; meal_number: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; entry_at: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
-              <View key={meal.id} style={styles.mealRecordItem}>
-                <Text style={styles.mealRecordItemText}>
-                  User : {meal.user_name || 'Unknown'}
-                </Text>
-                <Text style={styles.mealRecordItemText}>
-                  Meal Time: {meal.meal_time}
-                </Text>
-                <Text style={styles.mealRecordItemText}>
-                  Meal Number: {meal.meal_number}
-                </Text>
-                <Text style={styles.mealRecordItemText}>
-                  Entry At: {meal.entry_at}
-                </Text>
-              </View>
-            ))}
-          </View>
-        ))
-      ) : (
-        <Text style={styles.noMealsText}>No meals recorded.</Text>
-      )}
-    </ScrollView>
-  );
-};
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  title: {
-    fontSize: 24,
-    marginBottom: 10,
-  },
-  inputLabel: {
-    fontSize: 18,
-    marginBottom: 5,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    padding: 10,
-  },
-  mealRecord: {
-    marginBottom: 20,
-  },
-  mealRecordDate: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  mealRecordItem: {
-    marginBottom: 10,
-  },
-  mealRecordItemText: {
-    fontSize: 16,
-  },
-  noMealsText: {
-    fontSize: 18,
-    textAlign: 'center',
-  },
-});
-
-export default MealScreen;
+        keyboardType         = "numeric"
+        />
+  
+        <Button title="Submit" onPress={handleMealSubmit} />
+  
+        <Text style={styles.title}>Meal Records</Text>
+        {Object.keys(sortedMeals).length > 0 ? (
+          Object.keys(sortedMeals).map((dateKey) => (
+            <View key={dateKey} style={styles.mealRecord}>
+              <Text style={styles.mealRecordDate}>{dateKey}</Text>
+              {sortedMeals[dateKey].map((meal: { id: React.Key | null | undefined; user_name: any; meal_time: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; meal_number: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; entry_at: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; }) => (
+                <View key={meal.id} style={styles.mealRecordItem}>
+                  <Text style={styles.mealRecordItemText}>
+                    User : {meal.user_name || 'Unknown'}
+                  </Text>
+                  <Text style={styles.mealRecordItemText}>
+                    Meal Time: {meal.meal_time}
+                  </Text>
+                  <Text style={styles.mealRecordItemText}>
+                    Meal Number: {meal.meal_number}
+                  </Text>
+                  <Text style={styles.mealRecordItemText}>
+                    Entry At: {meal.entry_at}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          ))
+        ) : (
+          <Text style={styles.noMealsText}>No meals recorded.</Text>
+        )}
+      </ScrollView>
+    );
+  };
+  
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 20,
+    },
+    title: {
+      fontSize: 24,
+      marginBottom: 10,
+    },
+    inputLabel: {
+      fontSize: 18,
+      marginBottom: 5,
+    },
+    input: {
+      height: 40,
+      borderColor: 'gray',
+      borderWidth: 1,
+      marginBottom: 10,
+      padding: 10,
+    },
+    mealRecord: {
+      marginBottom: 20,
+    },
+    mealRecordDate: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 5,
+    },
+    mealRecordItem: {
+      marginBottom: 10,
+    },
+    mealRecordItemText: {
+      fontSize: 16,
+    },
+    noMealsText: {
+      fontSize: 18,
+      textAlign: 'center',
+    },
+  });
+  
+  export default MealScreen;

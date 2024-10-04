@@ -62,9 +62,6 @@ const DepositScreen: React.FC = () => {
 
   // Handle input field changes
   const handleInputChange = (field: string, value: string | number) => {
-    if (field === 'amount') {
-      console.log('Amount before conversion:', value); // Log the incoming value
-    }
     setNewDeposit({
       ...newDeposit,
       [field]: value,
